@@ -1,0 +1,88 @@
+﻿@{
+    ViewBag.Title = "View";
+}
+
+<script src="~/Scripts/jquery-1.10.2.js"></script>
+<script type="text/javascript">
+    //Load all the fruit images on window load
+    $(window).on("load", function () {
+         $.ajax({
+                    type: "POST",
+                    data: {},
+                    url: "@Url.Action("RefreshImages", "Images")",
+                    success: function (data) {
+                        if (data.length > 0) {
+                            var content = "";
+                            for (i = 0; i < 9; i++)
+                                content += '<table style="display: inline-block"><tr><img id=' + i + '" style="Height:150px; width:300px" src=' + data[i] + ' ></tr></table>';
+                            $("#resPane").html("");
+                            $("#resPane").append(content);
+                        }
+                    },
+                    error: function (data) {
+                        $("#resPane").html("");
+                        $("#resPane").append("There is a problem with Network/your request, Pease try again.");
+                    }
+        });
+
+    });
+    $(document).ready(function () {
+        $('#btnRefresh').bind("click", function () {
+
+                $.ajax({
+                    type: "POST",
+                    data: {},
+                    url: "@Url.Action("RefreshImages", "Images")",
+                    success: function (data) {
+                        if (data.length > 0) {
+                            var content = "";
+                            for (i = 0; i < data.length; i++)
+                                content += '<table style="display: inline-block"><tr><img id=' + i + '" style="Height:150px; width:300px" src=' + data[i] + ' ></tr></table>';
+
+                            //Find the middle fruit
+                            var middleFruitSrc = data[(data.length - 1) / 2];
+                            //If the input text given by user is a substring of middle fruit img src; display success message
+                            if (middleFruitSrc.indexOf($('#ddn option:selected').text().toLocaleLowerCase()) != -1 && $('#ddn option:selected').text()!="" )
+                                $('#resultLbl').text("You won! :) ");
+                            else
+                                $('#resultLbl').text("You Lost! :( ");
+                            $("#resPane").html("");
+                            $("#resPane").append(content);
+                        }
+                    },
+                    error: function (data) {
+                        $("#resPane").html("");
+                        $("#resPane").append("There is a problem with Network/your request, Pease try again.");
+                    }
+                 });
+
+             });
+
+         });
+
+</script>
+
+<link href="~/Content/MainStyle.css" rel="stylesheet" />
+<div class="mainClass">
+    <label class="lbl">Guess which fruit freezes in the middle box: </label>
+    @*<input class="glyphicon-filter" type="text" id="txtName" placeholder="enter name of the fruit.." />*@
+    <select class="dropdown" id="ddn">
+        <option selected="selected" value="dropdown">Select a Fruit</option>
+        <option value="Apple">Apple</option>
+        <option value="Banana">Banana</option>
+        <option value="Blueberry">Blueberry</option>
+        <option value="Cherry">Cherry</option>
+        <option value="Grapes">Grapes</option>
+        <option value="Mango">Mango</option>
+        <option value="Orange">Orange</option>
+        <option value="Strawberry">Strawberry</option>
+        <option value="Watermelon">Watermelon</option>
+    </select>
+    <input class="btn btn-default" type="button" value="Shuffle" id="btnRefresh" /><br /><br />
+    <div id="resPane"></div>
+    <label id="resultLbl" />
+</div>
+
+
+
+
